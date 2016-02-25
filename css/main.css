@@ -3,6 +3,10 @@ body {
     width: 70%;
 }
 
+nav {
+    border-bottom: 1px solid #d5d5d5;
+}
+
 nav ul, footer ul {
     font-family: 'Helvetica', 'Arial', 'Sans-Serif';
     padding: 0px;
@@ -25,12 +29,12 @@ a:hover {
 }
 
 h1 {
-    font-size: 3em;
+    font-size: 2.5em;
     font-family: 'Helvetica', 'Arial', 'Sans-Serif';
 }
 
 p {
-    font-size: 1.5em;
+    font-size: 1.2em;
     line-height: 1.4em;
     color: #333;
 }
