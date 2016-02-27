@@ -31,6 +31,14 @@ a:hover {
     color: #27608f;
 }
 
+table {
+    border-spacing: 3px;
+}
+
+td {
+    padding: 5px;
+}
+
 ol li {
     font-family: 'Helvetica Neue', 'Arial', 'Sans-Serif';
     margin-bottom: 5px;
