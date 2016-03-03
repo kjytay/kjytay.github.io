@@ -14,6 +14,10 @@ h2 {
     color: #333;
 }
 
+h3 {
+    color: #333;
+}
+
 .project_title {
     font-size: 1.2em;
     font-weight: normal;
@@ -38,12 +42,12 @@ a:hover {
     color: #27608f;
 }
 
-table td, table td * {
+table td {
     padding: 5px;
     vertical-align: top;
 }
 
-ol li {
+ol li, ul li {
     margin-bottom: 5px;
 }
 
