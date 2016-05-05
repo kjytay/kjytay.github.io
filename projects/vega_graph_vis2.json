@@ -196,6 +196,10 @@
               "test": "hoverPath ? (datum._id == hoverPath._id) : false",
               "value": "#c00"
             },
+            {
+              "test": "indata('fixed', datum._source._id, 'id')",
+              "value": "#b66"
+            },
             {"value": "#999"}
           ]
         }
@@ -207,7 +211,7 @@
       "properties": {
         "enter": {
           "fill": {"value": "#ddd"},
-          "fillOpacity": {"value": 0.9},
+          "fillOpacity": {"value": 0.8},
           "size": {"scale": "size", "data": "nodes", "field": "total_demand"},
           "stroke": {"value": "#999"},
           "strokeWidth": {"value": 1.5},
