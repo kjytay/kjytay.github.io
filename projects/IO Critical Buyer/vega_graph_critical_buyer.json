@@ -223,7 +223,11 @@
             },
             {
               "test": "indata('fixed', datum._target._id, 'id')",
-              "value": "#b66"
+              "value": "#fc9"
+            },
+            {
+              "test": "indata('fixed', datum._source._id, 'id')",
+              "value": "#9cf"
             },
             {"value": "#ccc"}
           ]
