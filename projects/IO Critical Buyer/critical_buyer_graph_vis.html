@@ -16,13 +16,14 @@
   </head>
   <body>
     <h1>Input-Output Table Visualisation: Critical Buyers</h1>
-    <p>Each node in the visualisation below represents one of the 127 sectors of the Singapore economy.</p>
+
+    <p>Each node in the visualisations below represents one of the 127 sectors of the Singapore economy.</p>
     <ul>
       <li>The size of the node represents its total output (includes exports and final domestic demand).</li>
       <li>The colour of the node represents the cluster it belongs to.</li>
     </ul>
 
-    <p>The links depict "critical buyer" relationships: a link is drawn from A to B (follow the arcs in a clockwise manner) if B is a critical buyer of A. At the moment, a link from A to B is only drawn if B buys more than 20% of A's output.</p>
+    <p>The links depict "critical buyer" relationships: a link is drawn from A to B (follow the arcs in a clockwise manner) if B is a critical buyer of A.</p>
     <ul>
       <li>The thicker the link (from A to B), the larger the percentage of A's output purchased by B.</li>
     </ul>
@@ -34,13 +35,56 @@
       <li>Hover over a link to see the buyer and supplier in the relationship, as well as the percentage of the supplier's output going to the buyer.</li>
     </ul>
 
-    <div id="vis"></div>
+    <p>Due to software limitations, I was not able to draw links from a sector to itself.</p>
+
+    <h2>Version 1</h2>
+    <p>A link from A to B is only drawn if B buys more than 20% of A's output.</p>
+    <div id="vis1"></div>
+
+    <h2>Version 2</h2>
+    <p>A link from A to B is only drawn if B buys more than 15% of A's output.</p>
+    <div id="vis2"></div>
+
+    <h2>Version 3</h2>
+    <p>A link from A to B is only drawn if B is one of A's top 5 buyers (exports and final domestic demand not ranked).</p>
+    <div id="vis3"></div>
+
+    <h2>Version 4</h2>
+    <p>A link from A to B is only drawn if B is one of A's top 5 buyers (exports and final domestic demand not ranked) and B buys more than 10% of A's output.</p>
+    <div id="vis4"></div>
+
+    <h2>Version 5</h2>
+    <p>Same as version 4, but nodes are arranged in an oval.</p>
+    <div id="vis5"></div>
+
+    <h2>Version 6</h2>
+    <p>A link from A to B is only drawn if B buys more than 20% of A's output. Exports and Domestic Demand are included as nodes. Also, when a node is double clicked, the % going to othe sectors, exports and domestic demand show up in the tooltip.</p>
+    <div id="vis6"></div>
+
+    <h2>Version 7</h2>
+    <p>Same as version 6, except that a link from A to B is only drawn if B is one of A's top 5 buyers (exports and domestic demand and ranked), and buys more than 10% of A's output.</p>
+    <div id="vis7"></div>
+
+    <h2>Version 8</h2>
+    <p>Same as version 7, except that links only appear when a node is double-clicked.</p>
+    <div id="vis8"></div>
+
+
   </body>
 <script type="text/javascript">
+
 // parse a spec and create a visualization view
-function parse(spec) {
-  vg.parse.spec(spec, function(error, chart) { chart({el:"#vis"}).update(); });
+function parse(spec, id) {
+  vg.parse.spec(spec, function(error, chart) { chart({el: id}).update(); });
 }
-parse("vega_graph_critical_buyer.json");
+parse("vega_graph_critical_buyer v1.json", "#vis1");
+parse("vega_graph_critical_buyer v2.json", "#vis2");
+parse("vega_graph_critical_buyer v3.json", "#vis3");
+parse("vega_graph_critical_buyer v4.json", "#vis4");
+parse("vega_graph_critical_buyer v5.json", "#vis5");
+parse("vega_graph_critical_buyer v6.json", "#vis6");
+parse("vega_graph_critical_buyer v7.json", "#vis7");
+parse("vega_graph_critical_buyer v8.json", "#vis8");
+
 </script>
 </html>

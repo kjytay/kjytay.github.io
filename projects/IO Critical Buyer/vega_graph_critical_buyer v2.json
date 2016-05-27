@@ -54,7 +54,7 @@
     },
     {
       "name": "nodes",
-      "url": "critical_buyer_graph_data.json",
+      "url": "critical_buyer_graph_data v1.json",
       "format": {"type": "json", "property": "nodes"},
       "transform": [
         {
@@ -71,12 +71,12 @@
     },
     {
       "name": "edges",
-      "url": "critical_buyer_graph_data.json",
+      "url": "critical_buyer_graph_data v1.json",
       "format": {"type": "json", "property": "links"},
       "transform": [
         {
           "type": "filter",
-          "test": "datum.value > 0.2"
+          "test": "datum.value > 0.15"
         },
         {
           "type": "formula",
