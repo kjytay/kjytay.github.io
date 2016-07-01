@@ -1,0 +1,247 @@
+{
+  "width": 1000,
+  "height": 600,
+  "padding": {"top": 50, "bottom": 100, "left": 50, "right": 300},
+  "signals": [
+    {
+      "name": "hover", "init": null,
+      "streams": [
+        { "type": "symbol:mouseover",
+          "expr": "datum._id" },
+        { "type": "window:mouseup, symbol:mouseout", "expr": "null" }
+      ]
+    },
+    {
+      "name": "dblclick", "init": null, "verbose": true,
+      "streams": [
+        {"type": "symbol:dblclick", "expr": "datum.cluster_no"}
+      ]
+    },
+    {
+      "name": "dblclick2", "init": null, "verbose": true,
+      "streams": [
+        {"type": "symbol:dblclick", "expr": "datum._id"}
+      ]
+    }
+  ],
+
+  "data": [
+    {
+      "name": "fixed",
+      "modify": [
+        {"type": "toggle", "signal": "dblclick", "field": "cluster_no"}
+      ]
+    },
+    {
+      "name": "fixed2",
+      "modify": [
+        {"type": "toggle", "signal": "dblclick2", "field": "id"}
+      ]
+    },
+    {
+      "name": "nodes",
+      "url": "critical_buyer_graph_data v20160527.json",
+      "format": {"type": "json", "property": "nodes"},
+      "transform": [
+        {
+          "type": "formula",
+          "field": "layout_x",
+          "expr": "(datum.steps-0.0)/3.0 * width"
+        },
+        {
+          "type": "formula",
+          "field": "layout_y",
+          "expr": "(1.0 - datum.ex_score) * height"
+        },
+        {
+          "type": "formula",
+          "field": "exPct",
+          "expr": "datum.ex * 100"
+        },
+        {
+          "type": "formula",
+          "field": "ddPct",
+          "expr": "datum.dd * 100"
+        },
+        {
+          "type": "formula",
+          "field": "intPct",
+          "expr": "(1.0 - datum.ex - datum.dd) * 100"
+        }
+      ]
+    }
+  ],
+
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "domainMin": 0.0,
+      "domainMax": 3.0,
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domainMin": 0.0,
+      "domainMax": 1.0,
+      "range": "height"
+    },
+    {
+      "name": "nodeSize",
+      "type": "linear",
+      "domain": {"data": "nodes", "field": "total_demand"},
+      "range": [80, 1600]
+    },
+    {
+      "name": "nodeColour",
+      "type": "ordinal",
+      "domain": {"data": "nodes", "field": "cluster"},
+      "range": ["#6baed6", "#fdae6b", "#74c476", "#d6616b", "#9e9ac8", "#ae7c72", "#f7b6d2"]
+    }
+  ],
+
+  "axes": [
+    {
+      "type": "x",
+      "scale": "x",
+      "title": "Steps from final demand",
+      "grid": true,
+      "properties": {
+        "ticks": {
+          "stroke": {"value": "#666"}
+        },
+        "labels": {
+          "fill": {"value": "#666"}
+        },
+        "title": {
+          "fontSize": {"value": 16},
+          "fill": {"value": "#666"}
+        },
+        "axis": {
+          "stroke": {"value": "#666"}
+        },
+        "grid": {
+          "stroke": {"value": "#c00"}
+        }
+      }
+    },
+    {
+      "type": "y",
+      "scale": "y",
+      "title": "(Total) contribution to exports (%)",
+      "grid": true,
+      "properties": {
+        "ticks": {
+          "stroke": {"value": "#666"}
+        },
+        "labels": {
+          "fill": {"value": "#666"}
+        },
+        "title": {
+          "fontSize": {"value": 16},
+          "fill": {"value": "#666"}
+        },
+        "axis": {
+          "stroke": {"value": "#666"}
+        },
+        "grid": {
+          "stroke": {"value": "#f00"}
+        }
+      }
+    }
+  ],
+
+  "legends": [
+    {
+      "fill": "nodeColour",
+      "title": "Clusters",
+      "offset": 0,
+      "properties": {
+        "title": {
+          "fontSize": {"value": 14}
+        },
+        "labels": {
+          "fontSize": {"value": 12}
+        },
+        "symbols": {
+          "stroke": {"value": "transparent"}
+        }
+      }
+    }
+  ],
+
+  "marks": [
+    {
+      "type": "symbol",
+      "from": {"data": "nodes"},
+      "properties": {
+        "enter": {
+          "fill": {"scale": "nodeColour", "field": "cluster"},
+          "size": {"scale": "nodeSize", "data": "nodes", "field": "total_demand"},
+          "stroke": {"value": "transparent"},
+          "strokeWidth": {"value": 1.5},
+          "x": {"field": "layout_x"},
+          "y": {"field": "layout_y"}
+        },
+        "hover": {
+          "stroke": {"value": "#900"}
+        },
+        "update": {
+          "stroke": [
+            {
+              "test": "indata('fixed2', datum._id, 'id')",
+              "value": "#900"
+            },
+            {"value": "transparent"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": { "data": "nodes"},
+      "properties": {
+        "enter": {
+          "align": {"value": "left"},
+          "fill": {"value": "#666"},
+          "x": {"scale": "x", "field": "steps"},
+          "y": {"scale": "y", "field": "ex_score"},
+          "dx": {"value": 12}
+        },
+        "update": {
+          "text": [
+            {
+              "test": "(indata('fixed', datum._id, 'id')) || (datum._id == hover)",
+              "template": "{{datum.desc}}"
+            },
+            {"value": ""}
+          ]
+        }
+      }
+    },
+
+    {
+      "type": "text",
+      "from": { "data": "nodes"},
+      "properties": {
+        "enter": {
+          "align": {"value": "left"},
+          "fill": {"value": "#666"},
+          "x": {"scale": "x", "field": "steps"},
+          "y": {"scale": "y", "field": "ex_score"},
+          "dx": {"value": 6}
+        },
+        "update": {
+          "text": [
+            {
+              "test": "indata('fixed', datum.cluster_no, 'cluster_no')",
+              "template": "{{datum.name}}"
+            },
+            {"value": ""}
+          ]
+        }
+      }
+    }
+  ]
+}

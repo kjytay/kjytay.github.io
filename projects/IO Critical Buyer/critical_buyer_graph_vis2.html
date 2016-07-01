@@ -41,6 +41,12 @@
     <p>Links only appear when a node is double-clicked. A link from A to B is only drawn if B is one of A's top 5 buyers and B buys more than 10% of A's output. Exports and Domestic Demand are included as nodes.</p>
     <div id="vis"></div>
 
+    <h2>Legend 1</h2>
+    <div id="legendVis1"></div>
+
+    <h2>Legend 2</h2>
+    <div id="legendVis2"></div>
+
 
   </body>
 <script type="text/javascript">
@@ -51,6 +57,8 @@ function parse(spec, id) {
 }
 
 parse("vega_graph_critical_buyer v9.json", "#vis");
+parse("vega_graph_critical_buyer_legendVis1.json", "#legendVis1");
+parse("vega_graph_critical_buyer_legendVis2.json", "#legendVis2");
 
 </script>
 </html>
