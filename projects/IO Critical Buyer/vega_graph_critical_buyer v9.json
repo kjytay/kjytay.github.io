@@ -1,7 +1,7 @@
 {
   "width": 1000,
   "height": 600,
-  "padding": {"top": 20, "bottom": 50, "left": 100, "right": 300},
+  "padding": {"top": 50, "bottom": 100, "left": 50, "right": 300},
   "signals": [
     {
       "name": "hover", "init": null,
@@ -17,24 +17,6 @@
         { "type": "path:mouseover",
           "expr": "datum" },
         { "type": "window:mouseup, path:mouseout", "expr": "null" }
-      ]
-    },
-    {
-      "name": "grab", "init": null,
-      "streams": [
-        { "type": "symbol:touchstart, symbol:mousedown",
-          "expr": "datum._id" },
-        { "type": "touchend, window:mouseup", "expr": "null" }
-      ]
-    },
-    {
-      "name": "active", "init": null,
-      "streams": [
-        { "type": "hover, grab", "expr": "{id: grab || hover}" },
-        {
-          "type": "symbol:touchmove, [symbol:mousedown, window:mouseup] > window:mousemove",
-          "expr": "{x: eventX(), y: eventY(), id: grab, update: true}"
-        }
       ]
     },
     {
@@ -54,29 +36,48 @@
     },
     {
       "name": "nodes",
-      "url": "graph_data.json",
+      "url": "critical_buyer_graph_data v20160527.json",
       "format": {"type": "json", "property": "nodes"},
       "transform": [
         {
           "type": "formula",
           "field": "layout_x",
-          "expr": "(datum.steps-1.0)/2.0 * width"
+          "expr": "(datum.steps-0.0)/3.0 * width"
         },
         {
           "type": "formula",
           "field": "layout_y",
           "expr": "(1.0 - datum.ex_score) * height"
+        },
+        {
+          "type": "formula",
+          "field": "exPct",
+          "expr": "datum.ex * 100"
+        },
+        {
+          "type": "formula",
+          "field": "ddPct",
+          "expr": "datum.dd * 100"
+        },
+        {
+          "type": "formula",
+          "field": "intPct",
+          "expr": "(1.0 - datum.ex - datum.dd) * 100"
         }
       ]
     },
     {
       "name": "edges",
-      "url": "graph_data.json",
+      "url": "critical_buyer_graph_data v20160527.json",
       "format": {"type": "json", "property": "links"},
       "transform": [
         {
           "type": "filter",
-          "test": "datum.value > 0.3"
+          "test": "datum.rank <= 5"
+        },
+        {
+          "type": "filter",
+          "test": "datum.value > 0.1"
         },
         {
           "type": "formula",
@@ -96,8 +97,7 @@
     {
       "name": "x",
       "type": "linear",
-      "zero": false,
-      "domainMin": 1.0,
+      "domainMin": 0.0,
       "domainMax": 3.0,
       "range": "width"
     },
@@ -109,16 +109,22 @@
       "range": "height"
     },
     {
-      "name": "size",
+      "name": "nodeSize",
       "type": "linear",
       "domain": {"data": "nodes", "field": "total_demand"},
-      "range": [40, 400]
+      "range": [80, 1600]
+    },
+    {
+      "name": "nodeColour",
+      "type": "ordinal",
+      "domain": {"data": "nodes", "field": "cluster"},
+      "range": ["#6baed6", "#fdae6b", "#74c476", "#d6616b", "#9e9ac8", "#ae7c72", "#f7b6d2"]
     },
     {
       "name": "lineThickness",
       "type": "linear",
       "domain": {"data": "edges", "field": "value"},
-      "range": [0.1, 8]
+      "range": [0.1, 6]
     }
   ],
 
@@ -173,12 +179,35 @@
     }
   ],
 
+  "legends": [
+    {
+      "fill": "nodeColour",
+      "title": "Clusters",
+      "offset": 0,
+      "properties": {
+        "title": {
+          "fontSize": {"value": 14}
+        },
+        "labels": {
+          "fontSize": {"value": 12}
+        },
+        "symbols": {
+          "stroke": {"value": "transparent"}
+        }
+      }
+    }
+  ],
+
   "marks": [
     {
       "type": "path",
       "from": {
         "data": "edges",
         "transform": [
+          {
+            "type": "filter",
+            "test": "indata('fixed', datum._target._id, 'id') || indata('fixed', datum._source._id, 'id')"
+          },
           {
             "type": "linkpath",
             "shape": "curve"
@@ -196,7 +225,15 @@
               "test": "hoverPath ? (datum._id == hoverPath._id) : false",
               "value": "#c00"
             },
-            {"value": "#999"}
+            {
+              "test": "indata('fixed', datum._target._id, 'id')",
+              "value": "#fc9"
+            },
+            {
+              "test": "indata('fixed', datum._source._id, 'id')",
+              "value": "#9cf"
+            },
+            {"value": "transparent"}
           ]
         }
       }
@@ -206,33 +243,74 @@
       "from": {"data": "nodes"},
       "properties": {
         "enter": {
-          "fill": {"value": "#ddd"},
-          "fillOpacity": {"value": 0.9},
-          "size": {"scale": "size", "data": "nodes", "field": "total_demand"},
-          "stroke": {"value": "#999"},
+          "fill": {"scale": "nodeColour", "field": "cluster"},
+          "size": {"scale": "nodeSize", "data": "nodes", "field": "total_demand"},
+          "stroke": {"value": "transparent"},
           "strokeWidth": {"value": 1.5},
           "x": {"field": "layout_x"},
           "y": {"field": "layout_y"}
         },
         "hover": {
-          "fill": {"value": "#fcc"},
           "stroke": {"value": "#900"}
         },
         "update": {
-          "fill": [
-            {
-              "test": "indata('fixed', datum._id, 'id')",
-              "value": "#fcc"
-            },
-            {"value": "#ddd"}
-          ],
           "stroke": [
             {
               "test": "indata('fixed', datum._id, 'id')",
               "value": "#900"
             },
-            {"value": "#999"}
+            {"value": "transparent"}
           ]
+        }
+      }
+    },
+
+
+    {
+      "type": "text",
+      "from": {
+        "data": "edges",
+        "transform": [
+          {
+            "type": "filter",
+            "test": "indata('fixed', datum._source._id, 'id')"
+          }
+        ]
+      },
+      "properties": {
+        "enter": {
+          "align": {"value": "left"},
+          "fill": {"value": "#888"},
+          "x": {"scale": "x", "field": "_target.steps"},
+          "y": {"scale": "y", "field": "_target.ex_score"},
+          "dx": {"value": 12},
+          "text": {
+            "template": "{{datum._target.desc}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "edges",
+        "transform": [
+          {
+            "type": "filter",
+            "test": "indata('fixed', datum._target._id, 'id')"
+          }
+        ]
+      },
+      "properties": {
+        "enter": {
+          "align": {"value": "left"},
+          "fill": {"value": "#888"},
+          "x": {"scale": "x", "field": "_source.steps"},
+          "y": {"scale": "y", "field": "_source.ex_score"},
+          "dx": {"value": 12},
+          "text": {
+            "template": "{{datum._source.desc}}"
+          }
         }
       }
     },
@@ -258,6 +336,8 @@
         }
       }
     },
+
+
     {
       "type": "text",
       "from": { "data": "nodes"},
@@ -283,11 +363,80 @@
     },
     {
       "type": "text",
+      "from": { "data": "nodes"},
+      "properties": {
+        "enter": {
+          "align": {"value": "left"},
+          "fill": {"value": "#666"},
+          "x": {"scale": "x", "field": "steps"},
+          "y": {"scale": "y", "field": "ex_score"},
+          "dx": {"value": 12},
+          "dy": {"value": 24}
+        },
+        "update": {
+          "text": [
+            {
+              "test": "indata('fixed', datum._id, 'id')",
+              "template": "{{datum.intPct|number:',.1f'}}% to other sectors"
+            },
+            {"value": ""}
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": { "data": "nodes"},
+      "properties": {
+        "enter": {
+          "align": {"value": "left"},
+          "fill": {"value": "#666"},
+          "x": {"scale": "x", "field": "steps"},
+          "y": {"scale": "y", "field": "ex_score"},
+          "dx": {"value": 12},
+          "dy": {"value": 36}
+        },
+        "update": {
+          "text": [
+            {
+              "test": "indata('fixed', datum._id, 'id')",
+              "template": "{{datum.exPct|number:',.1f'}}% direct to EX"
+            },
+            {"value": ""}
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": { "data": "nodes"},
+      "properties": {
+        "enter": {
+          "align": {"value": "left"},
+          "fill": {"value": "#666"},
+          "x": {"scale": "x", "field": "steps"},
+          "y": {"scale": "y", "field": "ex_score"},
+          "dx": {"value": 12},
+          "dy": {"value": 48}
+        },
+        "update": {
+          "text": [
+            {
+              "test": "indata('fixed', datum._id, 'id')",
+              "template": "{{datum.ddPct|number:',.1f'}}% direct to DD"
+            },
+            {"value": ""}
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
       "properties": {
         "enter": {
           "align": {"value": "left"},
           "fill": {"value": "#900"},
-          "x": {"value": 710},
+          "x": {"value": 670},
           "y": {"value": 16},
           "fontSize": {"value": 14}
         },
@@ -308,7 +457,7 @@
         "enter": {
           "align": {"value": "left"},
           "fill": {"value": "#900"},
-          "x": {"value": 710},
+          "x": {"value": 670},
           "y": {"value": 32},
           "fontSize": {"value": 14}
         },
@@ -329,7 +478,7 @@
         "enter": {
           "align": {"value": "left"},
           "fill": {"value": "#900"},
-          "x": {"value": 710},
+          "x": {"value": 670},
           "y": {"value": 48},
           "fontSize": {"value": 14}
         },
@@ -337,7 +486,7 @@
           "text": [
             {
               "test": "hoverPath",
-              "template": "Pct of buyer's input supplied: {{hoverPath.valuePct|number:',.1f'}}%"
+              "template": "Buyer buys {{hoverPath.valuePct|number:',.1f'}}% of supplier's output"
             },
             {"value": ""}
           ]

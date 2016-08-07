@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: "Helvetica", sans-serif;
+        padding-left: 20px;
+        padding-top: 20px;
+      }
+    </style>
+    <title>IO Table Visualisation</title>
+    <script src="https://vega.github.io/vega-editor/vendor/d3.min.js"></script>
+    <script src="https://vega.github.io/vega-editor/vendor/d3.geo.projection.min.js"></script>
+    <script src="https://vega.github.io/vega-editor/vendor/topojson.js"></script>
+    <script src="https://vega.github.io/vega-editor/vendor/d3.layout.cloud.js"></script>
+    <script src="https://vega.github.io/vega/vega.min.js"></script>
+  </head>
+  <body>
+    <h1>Input-Output Table Visualisation: Critical Suppliers</h1>
+    <p>Each node in the visualisation below represents one of the 127 sectors of the Singapore economy.</p>
+    <ul>
+      <li>The size of the node represents its total input (includes VA, imports and taxes).</li>
+    </ul>
+
+    <p>The links depict "critical supplier" relationships: a link is drawn from A to B (follow the arcs in a clockwise manner) if A is a critical supplier of B.</p>
+    <ul>
+      <li>The thicker the link (from A to B), the larger the percentage of B's input supplied by A.</li>
+    </ul>
+
+    <p>This visualisation is mildly interactive. You can:</p>
+    <ul>
+      <li>Hover over a node to see its description,</li>
+      <li>Double-click a node to see its total demand,</li>
+      <li>Hover over a link to see the buyer and supplier in the relationship, as well as the percentage of the buyer's input coming from the supplier.</li>
+    </ul>
+
+    <div id="vis"></div>
+  </body>
+<script type="text/javascript">
+// parse a spec and create a visualization view
+function parse(spec) {
+  vg.parse.spec(spec, function(error, chart) { chart({el:"#vis"}).update(); });
+}
+parse("vega_graph_critical_supplier.json");
+</script>
+</html>

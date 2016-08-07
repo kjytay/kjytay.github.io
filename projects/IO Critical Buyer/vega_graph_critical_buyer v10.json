@@ -1,0 +1,515 @@
+{
+  "parameters": [
+    {
+      "signal": "selectedSector",
+      "type": "select",
+      "name": "Choose a Sector: ",
+      "options": ["-", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129]
+    },
+    {
+      "signal": "buyerThreshold",
+      "type": "range",
+      "name": "Critical Buyer buys more than (%): ",
+      "min": 0.0, "max": 1.0, "value": 0.1
+    }
+  ],
+
+  "spec": {
+    "width": 1000,
+    "height": 600,
+    "padding": {"top": 50, "bottom": 100, "left": 50, "right": 300},
+    "signals": [
+      {
+        "name": "hover", "init": null,
+        "streams": [
+          { "type": "symbol:mouseover",
+            "expr": "datum._id" },
+          { "type": "window:mouseup, symbol:mouseout", "expr": "null" }
+        ]
+      },
+      {
+        "name": "hoverPath", "init": null,
+        "streams": [
+          { "type": "path:mouseover",
+            "expr": "datum" },
+          { "type": "window:mouseup, path:mouseout", "expr": "null" }
+        ]
+      },
+      {
+        "name": "dblclick", "init": null, "verbose": true,
+        "streams": [
+          {"type": "symbol:dblclick", "expr": "datum._id"}
+        ]
+      }
+    ],
+
+    "data": [
+      {
+        "name": "fixed",
+        "modify": [
+          {"type": "toggle", "signal": "dblclick", "field": "id"}
+        ]
+      },
+      {
+        "name": "nodes",
+        "url": "critical_buyer_graph_data v20160527.json",
+        "format": {"type": "json", "property": "nodes"},
+        "transform": [
+          {
+            "type": "formula",
+            "field": "layout_x",
+            "expr": "(datum.steps-0.0)/3.0 * width"
+          },
+          {
+            "type": "formula",
+            "field": "layout_y",
+            "expr": "(1.0 - datum.ex_score) * height"
+          },
+          {
+            "type": "formula",
+            "field": "exPct",
+            "expr": "datum.ex * 100"
+          },
+          {
+            "type": "formula",
+            "field": "ddPct",
+            "expr": "datum.dd * 100"
+          },
+          {
+            "type": "formula",
+            "field": "intPct",
+            "expr": "(1.0 - datum.ex - datum.dd) * 100"
+          }
+        ]
+      },
+      {
+        "name": "edges",
+        "url": "critical_buyer_graph_data v20160527.json",
+        "format": {"type": "json", "property": "links"},
+        "transform": [
+          {
+            "type": "filter",
+            "test": "datum.value > buyerThreshold"
+          },
+          {
+            "type": "formula",
+            "field": "valuePct",
+            "expr": "datum.value * 100"
+          },
+          {
+            "type": "lookup", "on": "nodes",
+            "keys": ["source", "target"],
+            "as": ["_source", "_target"]
+          }
+        ]
+      }
+    ],
+
+    "scales": [
+      {
+        "name": "x",
+        "type": "linear",
+        "domainMin": 0.0,
+        "domainMax": 3.0,
+        "range": "width"
+      },
+      {
+        "name": "y",
+        "type": "linear",
+        "domainMin": 0.0,
+        "domainMax": 1.0,
+        "range": "height"
+      },
+      {
+        "name": "nodeSize",
+        "type": "linear",
+        "domain": {"data": "nodes", "field": "total_demand"},
+        "range": [80, 1600]
+      },
+      {
+        "name": "nodeColour",
+        "type": "ordinal",
+        "domain": {"data": "nodes", "field": "cluster"},
+        "range": ["#6baed6", "#fdae6b", "#74c476", "#d6616b", "#9e9ac8", "#ae7c72", "#f7b6d2"]
+      },
+      {
+        "name": "lineThickness",
+        "type": "linear",
+        "domain": {"data": "edges", "field": "value"},
+        "range": [0.1, 6]
+      }
+    ],
+
+    "axes": [
+      {
+        "type": "x",
+        "scale": "x",
+        "title": "Steps from final demand",
+        "grid": true,
+        "properties": {
+          "ticks": {
+            "stroke": {"value": "#666"}
+          },
+          "labels": {
+            "fill": {"value": "#666"}
+          },
+          "title": {
+            "fontSize": {"value": 16},
+            "fill": {"value": "#666"}
+          },
+          "axis": {
+            "stroke": {"value": "#666"}
+          },
+          "grid": {
+            "stroke": {"value": "#c00"}
+          }
+        }
+      },
+      {
+        "type": "y",
+        "scale": "y",
+        "title": "(Total) contribution to exports (%)",
+        "grid": true,
+        "properties": {
+          "ticks": {
+            "stroke": {"value": "#666"}
+          },
+          "labels": {
+            "fill": {"value": "#666"}
+          },
+          "title": {
+            "fontSize": {"value": 16},
+            "fill": {"value": "#666"}
+          },
+          "axis": {
+            "stroke": {"value": "#666"}
+          },
+          "grid": {
+            "stroke": {"value": "#f00"}
+          }
+        }
+      }
+    ],
+
+    "legends": [
+      {
+        "fill": "nodeColour",
+        "title": "Clusters",
+        "offset": 0,
+        "properties": {
+          "title": {
+            "fontSize": {"value": 14}
+          },
+          "labels": {
+            "fontSize": {"value": 12}
+          },
+          "symbols": {
+            "stroke": {"value": "transparent"}
+          }
+        }
+      }
+    ],
+
+    "marks": [
+      {
+        "type": "path",
+        "from": {
+          "data": "edges",
+          "transform": [
+            {
+              "type": "filter",
+              "test": "indata('fixed', datum._target._id, 'id') || indata('fixed', datum._source._id, 'id') || (datum._target.name == selectedSector) || (datum._source.name == selectedSector)"
+            },
+            {
+              "type": "linkpath",
+              "shape": "curve"
+            }
+          ]
+        },
+        "properties": {
+          "enter": {
+            "path": {"field": "layout_path"},
+            "strokeWidth": {"scale": "lineThickness", "field": "value"}
+          },
+          "update": {
+            "stroke": [
+              {
+                "test": "hoverPath ? (datum._id == hoverPath._id) : false",
+                "value": "#c00"
+              },
+              {
+                "test": "indata('fixed', datum._target._id, 'id') || (datum._target.name == selectedSector)",
+                "value": "#fc9"
+              },
+              {
+                "test": "indata('fixed', datum._source._id, 'id') || (datum._source.name == selectedSector)",
+                "value": "#9cf"
+              },
+              {"value": "transparent"}
+            ]
+          }
+        }
+      },
+
+      {
+        "type": "symbol",
+        "from": {"data": "nodes"},
+        "properties": {
+          "enter": {
+            "fill": {"scale": "nodeColour", "field": "cluster"},
+            "size": {"scale": "nodeSize", "data": "nodes", "field": "total_demand"},
+            "stroke": {"value": "transparent"},
+            "strokeWidth": {"value": 1.5},
+            "x": {"field": "layout_x"},
+            "y": {"field": "layout_y"}
+          },
+          "hover": {
+            "stroke": {"value": "#900"}
+          },
+          "update": {
+            "stroke": [
+              {
+                "test": "indata('fixed', datum._id, 'id') || (datum.name == selectedSector)",
+                "value": "#900"
+              },
+              {"value": "transparent"}
+            ]
+          }
+        }
+      },
+
+
+      {
+        "type": "text",
+        "from": {
+          "data": "edges",
+          "transform": [
+            {
+              "type": "filter",
+              "test": "indata('fixed', datum._source._id, 'id') || (datum._source.name == selectedSector)"
+            }
+          ]
+        },
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#888"},
+            "x": {"scale": "x", "field": "_target.steps"},
+            "y": {"scale": "y", "field": "_target.ex_score"},
+            "dx": {"value": 12},
+            "text": {
+              "template": "{{datum._target.desc}}"
+            }
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": {
+          "data": "edges",
+          "transform": [
+            {
+              "type": "filter",
+              "test": "indata('fixed', datum._target._id, 'id') || (datum._target.name == selectedSector)"
+            }
+          ]
+        },
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#888"},
+            "x": {"scale": "x", "field": "_source.steps"},
+            "y": {"scale": "y", "field": "_source.ex_score"},
+            "dx": {"value": 12},
+            "text": {
+              "template": "{{datum._source.desc}}"
+            }
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": { "data": "nodes"},
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#666"},
+            "x": {"scale": "x", "field": "steps"},
+            "y": {"scale": "y", "field": "ex_score"},
+            "dx": {"value": 12}
+          },
+          "update": {
+            "text": [
+              {
+                "test": "(indata('fixed', datum._id, 'id')) || (datum._id == hover) || (datum.name == selectedSector)",
+                "template": "{{datum.desc}}"
+              },
+              {"value": ""}
+            ]
+          }
+        }
+      },
+
+
+      {
+        "type": "text",
+        "from": { "data": "nodes"},
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#666"},
+            "x": {"scale": "x", "field": "steps"},
+            "y": {"scale": "y", "field": "ex_score"},
+            "dx": {"value": 12},
+            "dy": {"value": 12}
+          },
+          "update": {
+            "text": [
+              {
+                "test": "indata('fixed', datum._id, 'id') || (datum.name == selectedSector)",
+                "template": "Total demand: ${{datum.total_demand|number:',.1f'}} mil"
+              },
+              {"value": ""}
+            ]
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": { "data": "nodes"},
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#666"},
+            "x": {"scale": "x", "field": "steps"},
+            "y": {"scale": "y", "field": "ex_score"},
+            "dx": {"value": 12},
+            "dy": {"value": 24}
+          },
+          "update": {
+            "text": [
+              {
+                "test": "indata('fixed', datum._id, 'id') || (datum.name == selectedSector)",
+                "template": "{{datum.intPct|number:',.1f'}}% to other sectors"
+              },
+              {"value": ""}
+            ]
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": { "data": "nodes"},
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#666"},
+            "x": {"scale": "x", "field": "steps"},
+            "y": {"scale": "y", "field": "ex_score"},
+            "dx": {"value": 12},
+            "dy": {"value": 36}
+          },
+          "update": {
+            "text": [
+              {
+                "test": "indata('fixed', datum._id, 'id') || (datum.name == selectedSector)",
+                "template": "{{datum.exPct|number:',.1f'}}% direct to EX"
+              },
+              {"value": ""}
+            ]
+          }
+        }
+      },
+      {
+        "type": "text",
+        "from": { "data": "nodes"},
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#666"},
+            "x": {"scale": "x", "field": "steps"},
+            "y": {"scale": "y", "field": "ex_score"},
+            "dx": {"value": 12},
+            "dy": {"value": 48}
+          },
+          "update": {
+            "text": [
+              {
+                "test": "indata('fixed', datum._id, 'id') || (datum.name == selectedSector)",
+                "template": "{{datum.ddPct|number:',.1f'}}% direct to DD"
+              },
+              {"value": ""}
+            ]
+          }
+        }
+      },
+
+      {
+        "type": "text",
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#900"},
+            "x": {"value": 670},
+            "y": {"value": 16},
+            "fontSize": {"value": 14}
+          },
+          "update": {
+            "text": [
+              {
+                "test": "hoverPath",
+                "template": "Supplier: {{hoverPath._source.desc}}"
+              },
+              {"value": ""}
+            ]
+          }
+        }
+      },
+      {
+        "type": "text",
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#900"},
+            "x": {"value": 670},
+            "y": {"value": 32},
+            "fontSize": {"value": 14}
+          },
+          "update": {
+            "text": [
+              {
+                "test": "hoverPath",
+                "template": "Buyer: {{hoverPath._target.desc}}"
+              },
+              {"value": ""}
+            ]
+          }
+        }
+      },
+      {
+        "type": "text",
+        "properties": {
+          "enter": {
+            "align": {"value": "left"},
+            "fill": {"value": "#900"},
+            "x": {"value": 670},
+            "y": {"value": 48},
+            "fontSize": {"value": 14}
+          },
+          "update": {
+            "text": [
+              {
+                "test": "hoverPath",
+                "template": "Buyer buys {{hoverPath.valuePct|number:',.1f'}}% of supplier's output"
+              },
+              {"value": ""}
+            ]
+          }
+        }
+      }
+
+
+    ]
+  }
+
+}
