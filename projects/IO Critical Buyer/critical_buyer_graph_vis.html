@@ -12,7 +12,8 @@
     <script src="https://vega.github.io/vega-editor/vendor/d3.geo.projection.min.js"></script>
     <script src="https://vega.github.io/vega-editor/vendor/topojson.js"></script>
     <script src="https://vega.github.io/vega-editor/vendor/d3.layout.cloud.js"></script>
-    <script src="https://vega.github.io/vega/vega.min.js"></script>
+    <script src="http://vega.github.io/vega-editor/vendor/vega.js" charset="utf-8"></script>
+    <script src="http://vega.github.io/vega-editor/vendor/vega-embed.js" charset="utf-8"></script>
   </head>
   <body>
     <h1>Input-Output Table Visualisation: Critical Buyers</h1>
@@ -77,14 +78,22 @@
 function parse(spec, id) {
   vg.parse.spec(spec, function(error, chart) { chart({el: id}).update(); });
 }
-parse("vega_graph_critical_buyer v1.json", "#vis1");
-parse("vega_graph_critical_buyer v2.json", "#vis2");
-parse("vega_graph_critical_buyer v3.json", "#vis3");
-parse("vega_graph_critical_buyer v4.json", "#vis4");
-parse("vega_graph_critical_buyer v5.json", "#vis5");
-parse("vega_graph_critical_buyer v6.json", "#vis6");
-parse("vega_graph_critical_buyer v7.json", "#vis7");
-parse("vega_graph_critical_buyer v8.json", "#vis8");
+//parse("vega_graph_critical_buyer v1.json", "#vis1");
+//parse("vega_graph_critical_buyer v2.json", "#vis2");
+//parse("vega_graph_critical_buyer v3.json", "#vis3");
+//parse("vega_graph_critical_buyer v4.json", "#vis4");
+//parse("vega_graph_critical_buyer v5.json", "#vis5");
+//parse("vega_graph_critical_buyer v6.json", "#vis6");
+//parse("vega_graph_critical_buyer v7.json", "#vis7");
+//parse("vega_graph_critical_buyer v8.json", "#vis8");
+vg.embed('#vis1', "vega_graph_critical_buyer v1.json");
+vg.embed('#vis2', "vega_graph_critical_buyer v2.json");
+vg.embed('#vis3', "vega_graph_critical_buyer v3.json");
+vg.embed('#vis4', "vega_graph_critical_buyer v4.json");
+vg.embed('#vis5', "vega_graph_critical_buyer v5.json");
+vg.embed('#vis6', "vega_graph_critical_buyer v6.json");
+vg.embed('#vis7', "vega_graph_critical_buyer v7.json");
+vg.embed('#vis8', "vega_graph_critical_buyer v8.json");
 
 </script>
 </html>

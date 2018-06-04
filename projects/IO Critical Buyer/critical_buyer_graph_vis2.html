@@ -12,7 +12,8 @@
     <script src="https://vega.github.io/vega-editor/vendor/d3.geo.projection.min.js"></script>
     <script src="https://vega.github.io/vega-editor/vendor/topojson.js"></script>
     <script src="https://vega.github.io/vega-editor/vendor/d3.layout.cloud.js"></script>
-    <script src="https://vega.github.io/vega/vega.min.js"></script>
+    <script src="http://vega.github.io/vega-editor/vendor/vega.js" charset="utf-8"></script>
+    <script src="http://vega.github.io/vega-editor/vendor/vega-embed.js" charset="utf-8"></script>
   </head>
   <body>
     <h1>Input-Output Table Visualisation: Critical Buyers</h1>
@@ -56,9 +57,13 @@ function parse(spec, id) {
   vg.parse.spec(spec, function(error, chart) { chart({el: id}).update(); });
 }
 
-parse("vega_graph_critical_buyer v9.json", "#vis");
-parse("vega_graph_critical_buyer_legendVis1.json", "#legendVis1");
-parse("vega_graph_critical_buyer_legendVis2.json", "#legendVis2");
+//parse("vega_graph_critical_buyer v9.json", "#vis");
+//parse("vega_graph_critical_buyer_legendVis1.json", "#legendVis1");
+//parse("vega_graph_critical_buyer_legendVis2.json", "#legendVis2");
+
+vg.embed('#vis', "vega_graph_critical_buyer v9.json");
+vg.embed('#legendVis1', "vega_graph_critical_buyer_legendVis1.json");
+vg.embed('#legendVis2', "vega_graph_critical_buyer_legendVis2.json");
 
 </script>
 </html>
