@@ -5,6 +5,16 @@ title: Kenneth Tay
 
 <h2>Software</h2>
 
+<div class="project_title">Lasso and elastic net generalized linear models ("glmnet")</div>
+<table>
+    <td width="75%">
+      <p>I had the privilege of working on versions 4.0 and 4.1 of <code>glmnet</code>, a popular R package with efficient procedures for fitting the entire lasso or elastic-net regularization path for generalized linear models (GLMs). With v4.0, we can fit ANY GLM by letting the <code>family</code> argument accept a class "family" object (previously we could only fit special GLM families). With v4.1, we can fit regularized Cox models for start-stop data as well as stratified Cox models. This opens up the way to fit a wide array of regularized Cox models (e.g. time-dependent covariates, left truncation, multiple events per subject).</p>
+
+      <p>The R package <code>glmnet</code> is available <a href="https://CRAN.R-project.org/package=glmnet">here</a>; more details on the <code>family</code> argument can be found <a href="https://glmnet.stanford.edu/articles/glmnetFamily.html">here</a>, and more details on regularized Cox models can be found <a href="https://glmnet.stanford.edu/articles/Coxnet.html">here</a>.</p>
+    </td>
+    <td><img position="absolute" margin="auto" width="70%" src="../images/glmnet_logo.png"></td>
+</table>
+
 <div class="project_title">Feature-weighted elastic net ("fwelnet")</div>
 <table>
     <td width="75%">
@@ -13,16 +23,6 @@ title: Kenneth Tay
       <p>The R package <code>fwelnet</code> is available <a href="https://github.com/kjytay/fwelnet">here</a>; more details on the method can be found <a href="https://arxiv.org/abs/2006.01395">here</a>.</p>
     </td>
     <td></td>
-</table>
-
-<div class="project_title">Generalized linear models with elastic net penalty ("glmnet")</div>
-<table>
-    <td width="75%">
-      <p>I had the privilege of working with <a href="https://web.stanford.edu/~hastie/">Trevor Hastie</a> on version 4.0 of <code>glmnet</code>, a popular R package efficient procedures for fitting the entire lasso or elastic-net regularization path for generalized linear models (GLMs). Before v4.0, we could only fit special GLM families; from v4.0 onwards, we can fit ANY GLM by letting the <code>family</code> parameter accept a class "family" object.</p>
-
-      <p>The R package <code>glmnet</code> is available <a href="https://CRAN.R-project.org/package=glmnet">here</a>; more details on the method can be found <a href="https://statisticaloddsandends.wordpress.com/2020/05/14/glmnet-v4-0-generalizing-the-family-parameter/">here</a>.</p>
-    </td>
-    <td><img position="absolute" margin="auto" width="70%" src="../images/glmnet_logo.png"></td>
 </table>
 
 <div class="project_title">Reluctant generalized additive models ("RGAM")</div>
