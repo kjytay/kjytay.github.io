@@ -1,0 +1,173 @@
+---
+title: "Analysis of Airbnb Data in NYC 2019"
+author: "Kenneth Tay"
+date: "17 Oct 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width=6, fig.height=4)
+```
+
+## Introduction
+
+This is a short data analysis of Airbnb listings in New York City (NYC) in 2019. The data was taken from https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data/.
+
+Package imports:
+```{r}
+library(tidyverse)
+library(knitr)
+```
+
+Read in dataset:
+```{r}
+df <- read_csv("airbnb_nyc_2019.csv", 
+               col_types = cols(host_id = col_character(), 
+                                id = col_character(), 
+                                last_review = col_date(format = "%Y-%m-%d")))
+```
+
+## Getting a feel for the data
+
+The dataset has `r nrow(df)` rows and `r ncol(df)` columns. Here are the first 6 rows of the dataset:
+
+```{r}
+kable(head(df))
+```
+
+Here are the column names of the dataset:
+```{r}
+names(df)
+```
+
+Each row in this dataset is an Airbnb listing. Sanity check: listing IDs are unique in this dataset.
+```{r}
+length(unique(df$id))
+```
+
+We note that there are some `NA` values in the `reviews_per_month` column. This probably because there were zero reviews. Let's fill that in:
+```{r}
+# if reviews_per_month is empty, it probably means zero reviews
+df$reviews_per_month <- replace_na(df$reviews_per_month, 0)
+```
+
+## No. of listings by neighborhood
+
+Manhattan has the most number of listings, followed by Brooklyn. It looks like most of the listings are either "Entire home/apt" or "Private room", with a pretty even split between these two types.
+
+```{r}
+ggplot(df, aes(x = fct_infreq(neighbourhood_group), fill = room_type)) +
+    geom_bar() +
+    labs(title = "No. of listings by borough",
+         x = "Borough", y = "No. of listings") +
+    theme(legend.position = "bottom")
+```
+
+Below is a plot of the top 10 neighborhoods by number of listings. All of them are either from Brooklyn or Manhattan.
+```{r}
+df %>%
+    group_by(neighbourhood) %>%
+    summarize(num_listings = n(), 
+              borough = unique(neighbourhood_group)) %>%
+    top_n(n = 10, wt = num_listings) %>%
+    ggplot(aes(x = fct_reorder(neighbourhood, num_listings), 
+               y = num_listings, fill = borough)) +
+    geom_col() +
+    coord_flip() +
+    theme(legend.position = "bottom") +
+    labs(title = "Top 10 neighborhoods by no. of listings",
+         x = "Neighborhood", y = "No. of listings")
+```
+
+## Price by room type
+
+The plot below shows the distribution of price by room type. (Note that the y-axis is on a log scale.) There is much variation in price within each room type. Overall, it looks like "Entire home/apt" listings are slightly pricier than "Private room", which in turn are more expensive than "Shared room". This makes intuitive sense.
+
+```{r}
+ggplot(df, aes(x = room_type, y = price)) +
+    geom_violin() +
+    scale_y_log10()
+```
+
+In making this plot, we noticed that 11 listings had price as zero. We are not sure why this is the case, but since it is such a small fraction of listings, we will ignore it for this analysis.
+```{r}
+df %>% filter(price == 0) %>%
+    select(name, host_id, host_name, neighbourhood_group, room_type, minimum_nights)
+```
+
+## Relationship between number of listings and median price by neighborhood
+
+Does the number of listings in a neighborhood affect the prices of those listings? For each neighborhood, we look at the number of listings as well as its median price. In the plot below, each neighborhood is presented by one point, and its color represents the borough it belongs to.
+
+```{r}
+# compute summary statistics for each neighborhood
+nhd_df <- df %>%
+    group_by(neighbourhood) %>%
+    summarize(num_listings = n(),
+              median_price = median(price),
+              long = median(longitude),
+              lat = median(latitude),
+              borough = unique(neighbourhood_group))
+
+nhd_df %>%
+    ggplot(aes(x = num_listings, y = median_price, col = borough)) +
+    geom_point(alpha = 0.5) + geom_smooth(se = FALSE) +
+    scale_x_log10() + scale_y_log10() +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+```
+
+Within each borough, it looks like the number of listings in a neighborhood does not have much of an impact on the median price of the listing.
+
+## Map of the top 50 most expensive listings
+
+```{r}
+library(ggmap)
+
+# get top 50 listings by price
+top_df <- df %>% top_n(n = 50, wt = price)
+
+# get background map
+top_height <- max(top_df$latitude) - min(top_df$latitude)
+top_width <- max(top_df$longitude) - min(top_df$longitude)
+top_borders <- c(bottom  = min(top_df$latitude)  - 0.1 * top_height,
+                 top     = max(top_df$latitude)  + 0.1 * top_height,
+                 left    = min(top_df$longitude) - 0.1 * top_width,
+                 right   = max(top_df$longitude) + 0.1 * top_width)
+
+top_map <- get_stamenmap(top_borders, zoom = 12, maptype = "toner-lite")
+
+# map of top 50 most expensive
+ggmap(top_map) +
+    geom_point(data = top_df, mapping = aes(x = longitude, y = latitude,
+                                        col = price)) +
+    scale_color_gradient(low = "blue", high = "red")
+```
+
+Most of them are located in Manhattan.
+
+## Median price by neighborhood
+
+In the map below, each dot is one neighborhood. The size of the dot depends on the number of listings and the color of the dot depends on the median price in that neighborhood.
+
+```{r}
+# map of all listings: one point per neighborhood
+height <- max(df$latitude) - min(df$latitude)
+width <- max(df$longitude) - min(df$longitude)
+borders <- c(bottom  = min(df$latitude)  - 0.1 * height,
+             top     = max(df$latitude)  + 0.1 * height,
+             left    = min(df$longitude) - 0.1 * width,
+             right   = max(df$longitude) + 0.1 * width)
+
+map <- get_stamenmap(borders, zoom = 11, maptype = "toner-lite")
+ggmap(map) +
+    geom_point(data = nhd_df, mapping = aes(x = long, y = lat,
+                                            col = median_price, size = num_listings)) +
+    scale_color_gradient(low = "blue", high = "red")
+```
+
+The median price for most neighborhoods is quite low; it looks somewhat elevated in Manhattan. Also, there are one or two neighborhoods with very high median prices in Staten Island: this is worth investigating further.
+
+## Conclusion
+
+There is much in this dataset that we have not explored yet. At first glance, it appears that room type and neighborhood have an effect on the listing price, but not the number of listings in the neighborhood.

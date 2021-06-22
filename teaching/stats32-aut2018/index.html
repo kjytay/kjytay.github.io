@@ -1,0 +1,166 @@
+
+<html>
+  <head>
+    <title>STATS 32 Autumn 2018/2019</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+<body>
+  <h1> STATS 32: Introduction to R for Undergraduates</h1>
+  <h2>Autumn 2019/2020</h2>
+
+  <h2>Course Description</h2>
+  <p>This short course runs for weeks two through five of the quarter. It is recommended for undergraduate students who want to use R in the humanities or social sciences and for students who want to learn the basics of R programming. The goal of the short course is to familiarize students with R's tools for data analysis. Lectures will be interactive with a focus on learning by example, and assignments will be application-driven. No prior programming experience is needed. Topics covered include basic data structures, File I/O, data transformation and visualization, simple statistical tests, etc, and some useful packages in R. Prerequisite: undergraduate student. Priority given to non-engineering students. Laptops necessary for use in class.</p>
+
+  <p>For the course syllabus, click <a target="_blank" href="STATS 32 Syllabus.pdf">here</a>.</p>
+  <hr>
+
+  <h2>Classes</h2>
+  TTh 12:00 to 1:20pm, <b>380-380Y</b> (Weeks 2-5 only)
+  <hr>
+
+  <h2>Instructor</h2>
+  <a target="_blank", href="https://kjytay.github.io/">Kenneth Tay</a>, Office Hours Friday 10am-12pm, Sequoia Hall Rm 207 (Weeks 1-6 only)
+  <hr>
+
+  <h2>Assignments</h2>
+  <h3>Final project & proposal (graded)</h3>
+  <p>The only graded assignments for this class are the final project (80%) and the project proposal (20%). Click <a href="projects/projects.html">here</a> for more details on these assignments.</p>
+
+  <h3>Programming questions (not graded)</h3>
+  <p>Programming is one of those things that you can't learn just by listening to lectures: you have to practice (and practice and practice)! However, since this is a 1 credit class, I don't want to have graded assignments on top of the project. To that end, after each session I will release a few questions to test your understanding of that session's material, and will release the answers a few days later. Responses to these questions will <b>NOT</b> be graded.</p>
+
+  <hr>
+
+  <h2>Course materials</h2>
+  <p>There is no textbook for this class. Having said that, much of the material for this class was heavily inspired by "R for Data Science" by Garrett Grolemund and Hadley Wickham which is available online for free <a target="_blank" href="http://r4ds.had.co.nz/">here</a>. It is very comprehensive and well-written, and I recommend it highly to anyone who wants to do data science in R!</p>
+
+  <p>Course materials will be added progressively to the table below. To save material, right-click and click on "Save Link As..."</p>
+
+  <table style="width:100%">
+    <tr>
+      <th style="width:10%">Session No.</th>
+      <th style="width:40%">Before class</th>
+      <th style="width:20%">In-class material</th>
+      <th style="width:30%">After class (optional)</th>
+    </tr>
+    <tr>
+      <td>Session 1 <br> (2 Oct)</td>
+      <td>Install R and RStudio on your laptop.<br>
+
+        Instructions: <a href="Session 1/Installation for Mac.html">Mac</a>/<a href="Session 1/Installation for Windows.html">Windows</a><br><br>
+
+        <i>Required reading:</i> <a href="Session 1/Variable Types.pdf">Variable types</a>.<br><br>
+
+        <i>Optional reading:</i>
+        <ul>
+          <li>Nick Thieme, <a href="Session 1/Thieme R generation.pdf">R generation</a>.</li>
+          <li>John Chambers, <a href="Session 1/John Chambers on Version 1 of S.pdf">Version 1 of S</a>.</li>
+        </ul>
+      </td>
+      <td><a href="Session 1/Session_1_Pres.html">Slides</a><br><br>
+        <a href="Session 1/Session_1_Code.html">Code</a>
+      </td>
+      <td><a href="Session 1/Session_1_Practice.html">Programming questions</a><br><br>
+        <i>Further R4DS reading:</i> Ch 4, 20
+      </td>
+    </tr>
+    <tr>
+      <td>Session 2 <br> (4 Oct)</td>
+      <td>
+        Install the <code>fueleconomy</code> package by entering <code>install.packages("fueleconomy")</code> in the RStudio console.<br><br>
+        <i>Required reading:</i> <a href="Session 2/Summary Statistics.pdf">Summary statistics</a>.<br><br>
+      </td>
+      <td><a href="Session 2/Session_2_Pres.html">Slides</a><br><br>
+        <a href="Session 2/Session_2_Code.html">Code</a></td>
+      <td><a href="Session 2/Session_2_Practice.html">Programming questions</a><br><br>
+      </td>
+    </tr>
+    <tr>
+      <td>Session 3 <br> (9 Oct)</td>
+      <td>Install the <code>ggplot2</code> package by entering <code>install.packages("ggplot2")</code> in the RStudio console.<br><br>
+        <i>Optional reading:</i>
+      <ul>
+        <li><a href="Session 3/Plotting_in_base_R.html">Plotting in base R</a>.</li>
+        <li>Hadley Wickham, <a href="Session 3/A Layered Grammar of Graphics.pdf">A layered grammar of graphics</a>.</li>
+      </ul></td>
+      <td><a href="Session 3/Session_3_Pres.html">Slides</a><br><br>
+        <a href="Session 3/Session_3_Code.html">Code</a></td>
+      <td><a href="Session 3/Session_3_Practice.html">Programming questions</a><br><br>
+        <i>Further R4DS reading:</i> Ch 3, 28</td>
+    </tr>
+    <tr>
+      <td>Session 4 <br> (11 Oct)</td>
+      <td>Install the <code>dplyr</code> and <code>nycflights13</code> packages in RStudio.</td>
+      <td><a href="Session 4/Session_4_Pres.html">Slides</a><br><br>
+        <a href="Session 4/Session_4_Code.html">Code</a></td>
+      <td><a href="Session 4/Session_4_Practice.html">Programming questions</a><br><br>
+        <i>Further R4DS reading:</i> Ch 5, 18</td>
+    </tr>
+    <tr>
+      <td>Session 5 <br> (16 Oct)</td>
+      <td>Make sure the <code>readr</code> and <code>tidyr</code> packages are installed on your machine. Check this by running <code>library(readr)</code>: if it loads, it is installed already. If you get an error, install the package using <code>install.packages("readr")</code>.</td>
+      <td><a href="Session 5/Session_5_Pres.html">Slides</a><br><br>
+        <a href="Session 5/Session_5_Code.html">Code</a><br><br>
+        <a href="Session 5/CA Drought Data 20150924-20180924.csv">Drought data</a><br><br>
+        <a href="Session 5/Drought Analysis v1.R">Drought analysis v1.R</a><br><br>
+        <a href="Session 5/Drought Analysis v2.R">Drought analysis v2.R</a><br><br>
+        <a href="Session 5/Drought Analysis v3.R">Drought analysis v3.R</a>
+      </td>
+      <td><a href="Session 5/Session_5_Practice.html">Programming questions</a><br><br>
+        <i>Further R4DS reading:</i> Ch 6, 8, 11</td>
+    </tr>
+    <tr>
+      <td>Session 6 <br> (18 Oct)</td>
+      <td>Make sure the <code>knitr</code> package is installed on your machine. Check this by running <code>library(knitr)</code>: if it loads, it is installed already. If you get an error, install the package using <code>install.packages("knitr")</code>.<br><br>
+        Make sure that R Markdown is working on your machine. Check this by following <a href="Session 6/Getting_started_with_Rmarkdown.html">these instructions</a>.<br><br>
+        <i>Optional reading:</i>
+      <ul>
+        <li><a href="Session 6/How science goes wrong.pdf">How science goes wrong</a>.</li>
+      </ul></td>
+      <td><a href="Session 6/Session_6_Pres.html">Slides</a><br><br>
+        <a href="Session 6/Session_6_Code.html">Code</a><br><br>
+        <a href="Session 6/2016_US_County_Level_Presidential_Results.csv">Elections data</a><br><br>
+        <a href="Session 6/Elections analysis.Rmd">Elections analysis.Rmd</a> (input)<br><br>
+        <a href="Session 6/Elections_analysis.html">Elections analysis.html</a> (output)
+      </td>
+      <td><a href="Session 6/Session_6_Practice.html">Programming questions</a><br><br>
+        <i>Further R4DS reading:</i> Ch 27, 30</td>
+    </tr>
+    <tr>
+      <td>Session 7 <br> (23 Oct)</td>
+      <td>Make sure the <code>maps</code> package is installed on your machine. Check this by running <code>library(maps)</code>: if it loads, it is installed already. If you get an error, install the package using <code>install.packages("maps")</code>.<br><br>
+        <i>Optional reading:</i>
+      <ul>
+        <li><a href="Session 7/Getting_started_with_ggmap.html">Getting started with <code>ggmap</code></a>.</li>
+      </ul>
+      </td>
+      <td><a href="Session 7/Session_7_Pres.html">Slides</a><br><br>
+        <a href="Session 7/Session_7_Code.html">Code</a><br><br>
+        <a href="Session 7/county_map_fips.rds">County map data</a><br><br>
+        <a href="Session 7/Elections starter.Rmd">Elections starter.Rmd</a>
+      </td>
+      <td><a href="Session 7/Session_7_Practice.html">Programming questions</a><br><br>
+    </tr>
+    <tr>
+      <td>Session 8 <br> (25 Oct)</td>
+      <td><i>Optional reading:</i>
+        <ul>
+          <li>Jason Brownlee, <a href="https://machinelearningmastery.com/statistical-hypothesis-tests/">A gentle introduction to statistical hypothesis tests</a>.</li>
+          <li><a href="http://faculty.chicagobooth.edu/richard.hahn/teaching/formulanotation.pdf">Statistical formula notation in R</a>.</li>
+          <li><a href="https://seeing-theory.brown.edu/index.html">Seeing Theory</a> (a fun website to learn basic statistical concepts).</li>
+        </ul>
+      </td>
+      <td><a href="Session 8/Session_8_Pres.html">Slides</a><br><br>
+        <a href="Session 8/Session_8_Code.html">Code</a><br><br>
+        <a href="Session 8/spotify-2017.csv">Spotify data</a><br><br>
+        <a href="Session 8/Spotify starter.Rmd">Spotify starter.Rmd</a><br><br>
+        <a href="Session 8/Spotify final.Rmd">Spotify final.Rmd</a> (input)<br><br>
+        <a href="Session 8/Spotify_final.html">Spotify final.html</a> (output)</td>
+      <td><a href="Session 8/Session_8_Practice.html">Programming questions</a><br><br>
+        <i>Further R4DS reading:</i> Ch 23</td>
+    </tr>
+  </table>
+
+
+</body>
+</html>

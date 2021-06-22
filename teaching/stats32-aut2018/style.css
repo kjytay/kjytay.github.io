@@ -1,0 +1,29 @@
+body {
+  font-family: "Helvetica", sans-sans-serif;
+}
+
+h1 {
+  color: #0000cc;
+}
+
+h2 {
+  color: #3333ff;
+}
+
+h3 {
+  color: #4169e1;
+}
+
+table, th, td {
+  border-collapse: collapse;
+  border: 1px solid black;
+  padding: 15px;
+}
+
+td {
+  vertical-align: top;
+}
+
+li {
+  margin-bottom: 5px;
+}

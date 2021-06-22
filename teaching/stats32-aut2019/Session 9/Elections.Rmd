@@ -1,0 +1,109 @@
+---
+title: "2016 US Presidential Elections"
+author: "Kenneth Tay"
+date: "Oct 22, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This is a short document presenting the results of the 2016 US presidential elections in maps.
+
+## Loading packages and data
+
+```{r message=FALSE}
+library(tidyverse)
+library(maps)
+```
+
+R's default mapping data does not have FIPS county codes which we will need later in the analysis. As such, we use our own dataset (see [this script](http://web.stanford.edu/~kjytay/courses/stats32-aut2019/Session%209/Wrangling%20map%20data.R) for details):
+```{r}
+map_county_fips <- readRDS("county_map_fips.rds")
+head(map_county_fips)
+```
+
+Next, we load the elections data. The original dataset was taken from https://github.com/tonmcg/County_Level_Election_Results_12-16; we work with a slightly different version (ETL details [here](http://web.stanford.edu/~kjytay/courses/stats32-aut2019/Session%209/Elections_ETL.R)).
+```{r message=FALSE}
+df <- read_csv("2016_US_Presdential_Results_for_class.csv")
+head(df)
+```
+
+## Summary statistics
+
+Compute percentage of popular vote won by each party:
+```{r}
+paste0("Republican % of popular vote: ", 
+       round(sum(df$votes_gop) / sum(df$total_votes) * 100, digits = 1),
+       "%")
+paste0("Democrat % of popular vote: ", 
+       round(sum(df$votes_dem) / sum(df$total_votes) * 100, digits = 1),
+       "%")
+```
+
+Although Clinton lost the presidential election, she actually won the popular vote!  
+
+Compute number of counties won by each party:
+```{r}
+df %>% mutate(gop_won = votes_gop > votes_dem) %>%
+    summarize(gop_won = sum(gop_won))
+```
+
+Painting a completely different picture, Trump won 2654 out of 3141 counties (or 84.5% of all counties). Clinton only won 487 counties. This suggests that Clinton won in counties with large populations, or that the margin of victory was slimmer in the counties that Trump won compared with the counties that Clinton won.
+
+## County-level map of election results
+
+To plot the results on a map, we need to join our datasets together first:
+```{r}
+map_county_per_diff <- map_county_fips %>%
+    left_join(df, by = "fips")
+```
+
+Below is a plot of the results by county, where the fill indicates the percentage by which the Republicans won that state. (Negative values indicate that the Democrats won that state):
+```{r}
+ggplot(data = map_county_per_diff, mapping = aes(x = long, y = lat, group = group)) +
+    geom_polygon(aes(fill = percent_diff)) + 
+    coord_quickmap() + 
+    labs(title = "Election results by county")
+```
+
+We can improve on the plot by making the color scale more intuitive and removing extraneous details:
+```{r}
+map_theme <- theme(
+    axis.title.x = element_blank(),
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y  = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white")
+)
+
+ggplot(data = map_county_per_diff, mapping = aes(x = long, y = lat, group = group)) +
+    geom_polygon(aes(fill = percent_diff)) + 
+    scale_fill_gradient2(low = "blue", high = "red") +
+    coord_quickmap() + 
+    labs(title = "Election results by county") +
+    map_theme
+```
+
+Below we have the same plot but with state boundaries drawn in.
+```{r}
+map_state <- map_data("state")
+ggplot(data = map_county_per_diff, mapping = aes(x = long, y = lat, group = group)) +
+    geom_polygon(aes(fill = percent_diff)) + 
+    geom_polygon(data = map_state, fill = NA, color = "black") +
+    scale_fill_gradient2(low = "blue", high = "red") +
+    coord_quickmap() + 
+    labs(title = "Election results by county") + 
+    map_theme
+```
+
+Overall, we find that the middle of the country voted more Republican while the coasts voted more Democrat. The one very blue spot in the middle of the country is Oglala County, South Dakota. From [Wikipedia](https://en.wikipedia.org/wiki/Oglala_Lakota_County,_South_Dakota#Politics): "The counties surrounding Oglala Lakota County are predominantly Republican, but, like most Native American counties, Oglala Lakota is heavily Democratic, giving over 75 percent of the vote to every Democratic presidential nominee in every election back to 1984, making it one of the most Democratic counties in the United States. No Republican has carried the county in a presidential election since 1952.") 
+
+## Conclusion
+
+Different summaries and visualizations draw out different insights from the data. While Clinton won the popular vote, she lost a big majority of counties. Trump won most of the counties in the middle of the country, while Clinton had more success on the coasts.

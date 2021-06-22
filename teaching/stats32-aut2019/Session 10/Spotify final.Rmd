@@ -1,0 +1,164 @@
+---
+title: "Analysis of Top Tracks in Spotify"
+author: "Kenneth Tay"
+date: "24 Oct 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width=6, fig.height=4)
+```
+
+## Introduction
+
+This is a basic analysis of the top 100 songs on Spotify for the year 2017. The audio features for each song were extracted using the Spotify Web API and the spotipy Python library. Credit goes to Spotify for calculating the audio feature values. This dataset is publicly available on [Kaggle](https://www.kaggle.com/nadintamer/top-tracks-of-2017/home).
+
+We will only look at a few columns that are of interest to us.
+
+## Data import and processing
+
+Library imports:
+```{r}
+library(tidyverse)
+library(knitr)
+```
+
+Data import:
+```{r}
+df <- read_csv("spotify-2017.csv", 
+    col_types = cols(mode = col_character()))
+df <- df %>% mutate(mode = fct_recode(mode, 
+                                      "Major" = "1.0",
+                                      "Minor" = "0.0"))
+```
+
+For this analysis, we will focus on mode, tempo, valence and loudness. Below are the details for these columns. For details on the remainder of the columns, see [here](https://www.kaggle.com/nadintamer/top-tracks-of-2017).
+
+- `name`: Name of the song  
+- `artists`:  Artist(s) of the song
+- `loudness`: The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typical range between -60 and 0 db. 
+- `mode`: Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived.
+- `valence`: A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).  
+- `tempo`: The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.
+
+Here is a glimpse of the dataset:
+```{r}
+df <- df %>% select(name, artists, loudness, mode, valence, tempo)
+kable(head(df))
+```
+
+
+## Differences in tempo between songs in major and minor keys
+
+First, we want to test if there is a difference in the distribution of tempo between songs in a major key and songs in a minor key. Let's look at this in a histogram:
+```{r}
+ggplot(data = df, mapping = aes(x = tempo)) +
+    geom_histogram(aes(fill = mode)) +
+    facet_wrap(~ mode)
+```
+
+The distribution in both plots look quite similar, with a large peak around 100 and maybe a smaller peak around 130-150.
+
+We can plot both these distributions as a density plot:
+```{r}
+ggplot(data = df, mapping = aes(x = tempo)) +
+    geom_density(aes(col = mode))
+```
+
+The two distributions look very similar.
+
+Let’s compute the mean tempo for each of the modes:
+```{r}
+df %>% group_by(mode) %>%
+    summarize(mean_tempo = mean(tempo))
+```
+
+Test if the difference in mean scores for the sexes is significant or not with the $t$-test:
+```{r}
+major_data <- (df %>% filter(mode == "Major"))$tempo
+minor_data <- (df %>% filter(mode == "Minor"))$tempo
+t.test(major_data, minor_data, alternative = "two.sided")
+```
+
+The $p$-value for this test is around 0.30, so we wouldn't reject the null hypothesis in favor of the alternative hypothesis.  
+
+Test if the distribution of tempo for songs in major key is significantly different from the distribution of tempo for songs in minor key with the Kolmogorov-Smirnov test:
+```{r}
+ks.test(major_data, minor_data, alternative = "two.sided")
+```
+
+The p-value for this test is around 0.80, so we don’t have enough evidence to reject the null hypothesis (i.e. the data we have could have reasonably come from the distribution under the null hypothesis).
+
+## Relationship between loudness and valence
+
+Scatterplot of `valence` vs. `loudness`:
+```{r}
+ggplot(data = df, mapping = aes(x = loudness, y = valence)) +
+    geom_point()
+```
+
+Let's fit a linear model of `valence` vs. `loudness`. Expectation: The louder the song, the happier it is. Hence, we expect a positive relationship.
+
+```{r}
+lm(valence ~ loudness, data = df)
+```
+
+Get more information on the linear fit with `summary`:
+```{r}
+fit <- lm(valence ~ loudness, data = df)
+summary(fit)
+```
+
+From the summary, the correlation between valence and loudness is statistically significant.
+
+Plot the linear fit along with the scatterplot:
+```{r}
+ggplot(data = df, mapping = aes(x = loudness, y = valence)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+
+## Modeling valence as a function of loudness and mode
+
+Whether a song is in a major key or a minor key could affect the relationship between valence and loudness. Expectation: ???
+
+```{r}
+ggplot(data = df, mapping = aes(x = loudness, y = valence, col = mode)) +
+    geom_point() +
+    facet_grid(. ~ mode)
+```
+
+First, let's fit the additive model:
+```{r}
+fit <- lm(valence ~ loudness + mode, data = df)
+summary(fit)
+```
+
+In this model, it seems like whether a song is in a major or minor key doesn't make a big difference.  
+
+Next, let’s fit the model with interactions:
+```{r}
+fit <- lm(valence ~ loudness * mode, data = df)
+summary(fit)
+```
+
+We can also draw the linear regression fits with the scatterplot:
+```{r}
+ggplot(data = df, mapping = aes(x = loudness, y = valence, col = mode)) + 
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE) +
+    facet_wrap(~ mode)
+```
+
+We can see a slight change in slope, but they look basically the same. This is more obvious when both are plotted on the same plot:
+```{r}
+ggplot(data = df, mapping = aes(x = loudness, y = valence, col = mode)) + 
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE)
+```
+
+## Conclusion
+
+Overall, it looks like whether a song is in a major or minor key does not have an effect on the tempo of the song. It also does not seem to influence the relationship between valence (a song's happiness index) and loudness. As expected, there is a positive relationship between valence and loudness.
